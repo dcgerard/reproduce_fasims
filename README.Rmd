@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: bib.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -12,7 +13,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Reproduce the Results of Gerard (2019)
+# Reproduce the Results of @gerard2019data
+
+## Introduction
+
+This repository contains the code and instructions needed to reproduce all of
+the results from @gerard2019data.
+
+If you find a bug, please create an
+[issue](https://github.com/dcgerard/reproduce_fasims/issues).
+
+## Instructions:
 
 1. Download and Install PEER: <https://github.com/PMBio/peer/wiki>. I had
    to build the R package from the cloned repository, as installing it from
@@ -50,7 +61,17 @@ knitr::opts_chunk$set(
     
     I cannot release these data, but it's free to sign up for access to GTEx.
 
-5. Run `make`. To reproduce all of the results in the paper, 
+5. Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile
+   according to your local computing environment. For example, you would need
+   to decrease `nc` if you have fewer than 12 CPU cores. You can check the 
+   number of CPU cores you have by typing the following in R:
+   
+    ```{r, eval=FALSE}
+    parallel::detectCores()
+    ```
+   
+
+6. Run `make`. To reproduce all of the results in the paper, 
    just type in the terminal
    
     ```{bash, eval=FALSE}
@@ -89,7 +110,59 @@ knitr::opts_chunk$set(
     ```{bash, eval=FALSE}
     make corest
     ```
+    
+7. Get coffee. Though most of the results will be generated rather quickly, 
+   the `make FAsims` call will take a very long time (mostly because of PEER). 
+   You should get some coffee! Here is a list of some of my favorite places:
 
+    - Washington, DC
+        - [Colony Club](https://www.yelp.com/biz/colony-club-washington)
+        - [Grace Street Coffee](https://www.yelp.com/biz/grace-street-coffee-georgetown)
+        - [Shop Made in DC](https://www.yelp.com/biz/shop-made-in-dc-washington)
+    - Chicago
+        - [Sawada Coffee](https://www.yelp.com/biz/sawada-coffee-chicago)
+        - [Plein Air Cafe](https://www.yelp.com/biz/plein-air-cafe-and-eatery-chicago-2)
+    - Seattle
+        - [Bauhaus Ballard](https://www.yelp.com/biz/bauhaus-ballard-seattle)
+        - [Cafe Solstice](https://www.yelp.com/biz/cafe-solstice-seattle)
+    - Columbus
+        - [Yeah, Me Too](https://www.yelp.com/biz/yeah-me-too-columbus)
+        - [Stauf's Coffee Roasters](https://www.yelp.com/biz/staufs-coffee-roasters-columbus-2)
 
+## Package Versions
+
+If you are having trouble reproducing these results, check your package 
+versions. These are the ones that I used:
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
+package_vec <- c("seqgendiff",
+                 "tidyverse", 
+                 "BiocManager", 
+                 "vroom", 
+                 "fastICA", 
+                 "ssvd",
+                 "sparsepca",
+                 "elasticnet",
+                 "doSNOW", 
+                 "ggthemes",
+                 "latex2exp",
+                 "SummarizedExperiment", 
+                 "pcaMethods", 
+                 "sva",
+                 "edgeR",
+                 "DESeq2", 
+                 "limma",
+                 "peer",
+                 "powsimR")
+lapply(package_vec, library, character.only = TRUE)
+```
+
+```{r}
+sessionInfo()
+```
+
+Note that I've also only tried this on Ubuntu.
+
+## References
     
 
