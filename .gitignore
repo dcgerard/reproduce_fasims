@@ -1,0 +1,12 @@
+analysis/
+
+
+## R project files
+.Rproj.user
+*.Rproj
+.Rhistory
+.RData
+*.Rout
+
+## Temp files
+*~
