@@ -11,26 +11,31 @@ musc      <- readRDS("./output/tissue_data/muscle_skeletal.RDS")
 which_bad <- rowMeans(assay(musc)) < 10
 musc      <- musc[!which_bad, ]
 
-## Set simulation parameters
+## Set simulation parameters --------------------------------------------------
 set.seed(1)
 prop_null <- 0.75
 lfc_sd    <- 0.8
 nsamp     <- ncol(musc)
 ngene     <- nrow(musc)
 
-## Simulate powsimR
+## Simulate powsimR -----------------------------------------------------------
+## We divide by lfc_sd by 2 in powsimR but not in seqgendiff because
+## the design matrix (used to simulate counts) in powsimR is c(rep(-1, nsamp/2), rep(1, nsamp/2))
+## while the design matrix in seqgendiff if c(rep(0, nsamp/2), rep(1, nsamp/2)).
+## Dividing by 2 will allow us to use the 0/1 design matrix in voom-limma
+## rather than the -1/1 design matrix.
 epout <- readRDS("./output/compare_powsimR/powsim_params.RDS")
 psout <- powsimR::simulateCounts(n = c(nsamp / 2, nsamp / 2),
                                  ngenes = ngene,
                                  p.DE = 1 - prop_null,
                                  params = epout,
-                                 pLFC   = function(n) rnorm(n, mean = 0, sd = lfc_sd))
+                                 pLFC   = function(n) rnorm(n, mean = 0, sd = lfc_sd / 2))
 countdat_ps <- psout$GeneCounts
 designmat_ps <- cbind(1, c(rep(0, nsamp / 2), rep(1, nsamp / 2)))
-beta_ps <- c(psout$pLFC)
+beta_ps <- c(psout$pLFC) * 2 ## multiply back by 2 b/c divide by 2 in pLFC function
 whichnull_ps <- abs(beta_ps) < 10^-6
 
-## Simulate seqgendiff
+## Simulate seqgendiff --------------------------------------------------------
 which_gene <- sort(sample(seq_len(nrow(musc)), ngene))
 which_samp <- sort(sample(seq_len(ncol(musc)), nsamp))
 submusc   <- musc[which_gene, which_samp]
@@ -45,13 +50,13 @@ beta_sgd <- c(thout$coefmat)
 whichnull_sgd <- abs(beta_sgd) < 10^-6
 
 
-## Explore features of data
+## Explore features of data ---------------------------------------------------
 lmusc      <- log2(assay(musc) + 0.5)
 lcount_ps  <- log2(countdat_ps + 0.5)
 lcount_sgd <- log2(countdat_sgd + 0.5)
 
 
-## Mean gene counts are the same
+## Mean gene counts are the same ----------------------------------------------
 gene_count_df <- tibble(GTEx       = rowMeans(lmusc),
                         powersimR  = rowMeans(lcount_ps),
                         seqgendiff = rowMeans(lcount_sgd))
@@ -69,7 +74,7 @@ ggsave(filename = "./output/figures/powsimr_vs_seqgendiff/mean_gene_depth.pdf",
        width = 4,
        height = 2)
 
-## Mean gene counts are the same
+## Mean gene counts are the same ----------------------------------------------
 gene_count_df <- tibble(GTEx       = c(lmusc),
                         powersimR  = c(lcount_ps),
                         seqgendiff = c(lcount_sgd))
@@ -161,7 +166,7 @@ ggsave(filename = "./output/figures/powsimr_vs_seqgendiff/pc1_pc4.pdf",
        height = 2.6)
 
 ## Same coefficient distribution
-qplot(sort(thout$coefmat), sort(psout$pLFC)) +
+qplot(sort(beta_sgd), sort(beta_ps)) +
   geom_abline() -> pl
 
 
@@ -179,8 +184,19 @@ vout_ps <- limma::voom(counts = countdat_ps, design = designmat_ps, save.plot = 
 lout_ps <- limma::lmFit(vout_ps)
 eout_ps <- limma::eBayes(lout_ps)
 
-plot(beta_ps, eout_ps$coefficients[, 2])
-abline(0, 1)
+qplot(beta_ps, eout_ps$coefficients[, 2]) +
+  geom_abline(color = 2, lty = 2, lwd = 1) +
+  xlab(TeX("$b_1$")) +
+  ylab(TeX("$\\hat{b}_1$")) +
+  theme_bw() ->
+  pl
+
+ggsave(file = "./output/figures/powsimr_vs_seqgendiff/powsimR_truevsfits.pdf",
+       plot = pl,
+       family = "Times",
+       height = 3,
+       width = 6)
+
 qplot(beta_sgd, eout_sgd$coefficients[, 2]) +
   geom_abline(color = 2, lty = 2, lwd = 1) +
   xlab(TeX("$b_1$")) +

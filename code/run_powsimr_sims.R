@@ -23,7 +23,7 @@ if (length(args) == 0) {
 
 ## Simulation Settings --------------------------------------------------------
 prop_null <- 0.9
-lfc_sd    <- c(0.8, 1)
+lfc_sd    <- 0.8
 nsamp     <- 10
 ngene     <- 10000
 itermax   <- 500
@@ -54,14 +54,19 @@ retmat <- foreach (iterindex = seq_len(nrow(pardf)),
            lfc_sd <- pardf[iterindex, "lfc_sd"]
 
            ## Simulate data ---------------------------------------------------
+           ## We divide by lfc_sd by 2 in powsimR but not in seqgendiff because
+           ## the design matrix (used to simulate counts) in powsimR is c(rep(-1, nsamp/2), rep(1, nsamp/2))
+           ## while the design matrix in seqgendiff if c(rep(0, nsamp/2), rep(1, nsamp/2)).
+           ## Dividing by 2 will allow us to use the 0/1 design matrix in voom-limma
+           ## rather than the -1/1 design matrix.
            psout <- powsimR::simulateCounts(n = c(nsamp / 2, nsamp / 2),
                                             ngenes = ngene,
                                             p.DE = 1 - prop_null,
                                             params = epout,
-                                            pLFC   = function(n) rnorm(n, mean = 0, sd = lfc_sd))
+                                            pLFC   = function(n) rnorm(n, mean = 0, sd = lfc_sd / 2))
            countdat <- psout$GeneCounts
            design_mat <- cbind(1, c(rep(0, nsamp / 2), rep(1, nsamp / 2)))
-           beta <- c(psout$pLFC)
+           beta <- c(psout$pLFC) * 2 ## multiply back by 2 b/c divide by 2 in pLFC function
            which_null <- abs(beta) < 10^-6
 
            ## Fit methods -----------------------------------------------------

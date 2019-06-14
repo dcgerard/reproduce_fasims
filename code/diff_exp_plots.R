@@ -6,6 +6,15 @@ library(ggthemes)
 powsimr_df <- as_tibble(readRDS(file = "./output/diff_exp_out/powsimr_sims.RDS"))
 seqgendiff_df <- as_tibble(readRDS(file = "./output/diff_exp_out/seqgendiff_sims.RDS"))
 
+## Sanity check since I changed the sims so that lfc_sd only has one value for powsimR ----
+powsimr_df %>%
+  group_by(seed) %>%
+  count() %>%
+  filter(n > 1) %>%
+  nrow() ->
+  numnonunique
+stopifnot(numnonunique == 0)
+
 ## Compare median PVE on non-null genes ---------------------------------------
 powsimr_df %>%
   select(lfc_sd, mpve) %>%
@@ -19,7 +28,7 @@ seqgendiff_df %>%
   sgdtemp
 
 bind_rows(pstemp, sgdtemp) %>%
-  mutate(method_lfc = paste0(method, "\nsd(lfc) = ", lfc_sd)) %>%
+  mutate(method_lfc = method) %>%
   ggplot(aes(x = method_lfc, y = mpve)) +
   geom_boxplot() +
   theme_bw() +
@@ -49,7 +58,7 @@ seqgendiff_df %>%
   sgdtemp
 
 bind_rows(pstemp, sgdtemp) %>%
-  mutate(sim_lfc = paste0(sim, "\nsd(lfc) = ", lfc_sd)) %>%
+  mutate(sim_lfc = sim) %>%
   mutate(method = recode(method,
                          "dout" = "DESeq2",
                          "eout" = "edgeR",
@@ -85,7 +94,7 @@ seqgendiff_df %>%
   sgdtemp
 
 bind_rows(pstemp, sgdtemp) %>%
-  mutate(sim_lfc = paste0(sim, "\nsd(lfc) = ", lfc_sd)) %>%
+  mutate(sim_lfc = sim) %>%
   mutate(method = recode(method,
                          "dout" = "DESeq2",
                          "eout" = "edgeR",
@@ -120,7 +129,7 @@ seqgendiff_df %>%
   sgdtemp
 
 bind_rows(pstemp, sgdtemp) %>%
-  mutate(sim_lfc = paste0(sim, "\nsd(lfc) = ", lfc_sd)) %>%
+  mutate(sim_lfc = sim) %>%
   mutate(method = recode(method,
                          "dout" = "DESeq2",
                          "eout" = "edgeR",
