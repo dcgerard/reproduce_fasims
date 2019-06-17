@@ -11,7 +11,7 @@ all of the results from Gerard (2019).
 If you find a bug, please create an
 [issue](https://github.com/dcgerard/reproduce_fasims/issues).
 
-## Instructions:
+## Instructions
 
 1.  Download and Install PEER: <https://github.com/PMBio/peer/wiki>. I
     had to build the R package from the cloned repository, as installing
@@ -68,7 +68,7 @@ If you find a bug, please create an
     make
     ```
     
-    To just reproduce the results comparing the `powsimR` datasets from
+    To just reproduce the results comparing the `powsimR` datasets to
     the `seqgendiff` datasets, run in the terminal:
     
     ``` bash
@@ -180,8 +180,8 @@ sessionInfo()
 #> [37] stringr_1.4.0               dplyr_0.8.1                
 #> [39] purrr_0.3.2                 readr_1.3.1                
 #> [41] tidyr_0.8.3                 tibble_2.1.3               
-#> [43] ggplot2_3.1.1               tidyverse_1.2.1            
-#> [45] seqgendiff_0.3.0           
+#> [43] ggplot2_3.2.0               tidyverse_1.2.1            
+#> [45] seqgendiff_0.4.0           
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] mixtools_1.1.0             softImpute_1.4            
@@ -190,7 +190,7 @@ sessionInfo()
 #>   [7] penalized_0.9-51           blob_1.1.1                
 #>   [9] survival_2.44-1.1          later_0.8.0               
 #>  [11] nloptr_1.2.1               DBI_1.0.0                 
-#>  [13] R.utils_2.8.0              SingleCellExperiment_1.6.0
+#>  [13] R.utils_2.9.0              SingleCellExperiment_1.6.0
 #>  [15] Linnorm_2.8.0              dqrng_0.2.1               
 #>  [17] zlibbioc_1.30.0            MatrixModels_0.4-1        
 #>  [19] pspline_1.0-18             SDMTools_1.1-221.1        
@@ -198,7 +198,7 @@ sessionInfo()
 #>  [23] future_1.13.0              UpSetR_1.4.0              
 #>  [25] scater_1.12.2              irlba_2.3.3               
 #>  [27] DEoptimR_1.0-8             Rcpp_1.0.1                
-#>  [29] KernSmooth_2.23-15         DT_0.6                    
+#>  [29] KernSmooth_2.23-15         DT_0.7                    
 #>  [31] promises_1.0.1             gdata_2.18.0              
 #>  [33] DDRTree_0.1.5              vegan_2.5-5               
 #>  [35] Hmisc_4.2-0                ShortRead_1.42.0          
@@ -228,7 +228,7 @@ sessionInfo()
 #>  [83] RMTstat_0.3                BiocNeighbors_1.2.0       
 #>  [85] annotate_1.62.0            jsonlite_1.6              
 #>  [87] XVector_0.24.0             bit_1.1-14                
-#>  [89] mime_0.6                   gridExtra_2.3             
+#>  [89] mime_0.7                   gridExtra_2.3             
 #>  [91] gplots_3.0.1.1             Rsamtools_2.0.0           
 #>  [93] zingeR_0.1.0               stringi_1.4.3             
 #>  [95] gmodels_2.18.1             gsl_2.1-6                 
@@ -257,7 +257,7 @@ sessionInfo()
 #> [141] sparsesvd_0.1-4            CompQuadForm_1.4.3        
 #> [143] bibtex_0.4.2               ggdendro_0.1-20           
 #> [145] cluster_2.0.9              future.apply_1.2.0        
-#> [147] Seurat_3.0.1               Matrix_1.2-17             
+#> [147] Seurat_3.0.2               Matrix_1.2-17             
 #> [149] prettyunits_1.0.2          shinyBS_0.61              
 #> [151] lubridate_1.7.4.9000       ggridges_0.5.1            
 #> [153] NOISeq_2.28.0              shinydashboard_0.7.1      

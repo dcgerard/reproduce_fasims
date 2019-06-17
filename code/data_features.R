@@ -83,7 +83,8 @@ gene_count_df %>%
   ggplot(aes(color = Dataset, x = Depth, lty = Dataset)) +
   geom_freqpoly(lwd = 1) +
   theme_bw() +
-  ylab("log(count + 0.5)") +
+  xlab("log(count + 0.5)") +
+  ylab("frequency") +
   scale_color_colorblind() ->
   pl
 

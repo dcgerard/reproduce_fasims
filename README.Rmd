@@ -23,7 +23,7 @@ the results from @gerard2019data.
 If you find a bug, please create an
 [issue](https://github.com/dcgerard/reproduce_fasims/issues).
 
-## Instructions:
+## Instructions
 
 1. Download and Install PEER: <https://github.com/PMBio/peer/wiki>. I had
    to build the R package from the cloned repository, as installing it from
@@ -69,7 +69,6 @@ If you find a bug, please create an
     ```{r, eval=FALSE}
     parallel::detectCores()
     ```
-   
 
 6. Run `make`. To reproduce all of the results in the paper, 
    just type in the terminal
@@ -78,7 +77,7 @@ If you find a bug, please create an
     make
     ```
     
-    To just reproduce the results comparing the `powsimR` datasets from the 
+    To just reproduce the results comparing the `powsimR` datasets to the 
     `seqgendiff` datasets, run in the terminal:
     
     ```{bash, eval=FALSE}
