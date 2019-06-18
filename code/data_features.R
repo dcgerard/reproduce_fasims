@@ -136,12 +136,13 @@ pcdf <- bind_rows(
          PC2 = sv_sg$v[, 2],
          group = factor(designmat_sgd[, 2])))
 
-ggplot(pcdf, aes(x = PC1, y = PC2, color = group)) +
+ggplot(pcdf, aes(x = PC1, y = PC2, color = group, shape = group)) +
   facet_wrap(.~dataset) +
   geom_point() +
   theme_bw() +
   theme(strip.background = element_rect(fill = "white")) +
-  scale_color_colorblind(name = "Group", na.translate = TRUE, na.value = ggthemes::colorblind_pal()(3)[3]) ->
+  scale_color_colorblind(name = "Group", na.translate = TRUE, na.value = ggthemes::colorblind_pal()(3)[3]) +
+  scale_shape_discrete(name = "Group", na.translate = TRUE, na.value = 15) ->
   pl
 
 ggsave(filename = "./output/figures/powsimr_vs_seqgendiff/pc_plot.pdf",

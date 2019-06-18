@@ -77,6 +77,26 @@ ggsave(filename = "./output/figures/diff_exp/fdp.pdf",
        height = 2.6,
        width  = 4)
 
+bind_rows(pstemp, sgdtemp) %>%
+  mutate(sim_lfc = sim) %>%
+  mutate(method = recode(method,
+                         "dout" = "DESeq2",
+                         "eout" = "edgeR",
+                         "vout" = "voom+limma")) %>%
+  ggplot(aes(x = method, y = fdp, fill = sim_lfc)) +
+  geom_boxplot(outlier.size = 0.5) +
+  scale_fill_grey(name = "Simulation\nMethod", end = 0.9, start = 0.4) +
+  theme_bw() +
+  geom_hline(yintercept = 0.05, lty = 2) +
+  xlab("Method") +
+  ylab("FDP") ->
+  pl
+
+ggsave(filename = "./output/figures/diff_exp/fdp_bw.pdf",
+       family = "Times",
+       height = 2.6,
+       width  = 4)
+
 ## Compare power ----------------------------------------------------------------
 powsimr_df %>%
   select(contains("power"), lfc_sd) %>%
