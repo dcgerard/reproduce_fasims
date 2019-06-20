@@ -20,7 +20,7 @@ for (index in seq_len(nrow(sepcordf))) {
     mutate(pz = str_c("Proportion Zeros = ", pz),
            lsd = str_c("Loadings SD = ", lsd),
            nsamp = factor(nsamp),
-           method = factor(method, levels = c("ssvd", "pca", "ica", "peer"))) %>%
+           method = factor(method, levels = c("ssvd", "pca", "flash", "ica", "peer"))) %>%
     ggplot(aes(x = nsamp, y = cordiff, color = method)) +
     geom_boxplot(outlier.size = 0.1) +
     facet_grid(pz ~ lsd) +
@@ -55,7 +55,7 @@ for (index in seq_len(nrow(sepcordf))) {
     mutate(pz = str_c("Proportion Zeros = ", pz),
            lsd = str_c("Loadings SD = ", lsd),
            nsamp = factor(nsamp),
-           method = factor(method, levels = c("ssvd", "pca", "ica", "peer"))) %>%
+           method = factor(method, levels = c("ssvd", "pca", "flash", "ica", "peer"))) %>%
     ggplot(aes(x = nsamp, y = angle, color = method)) +
     geom_boxplot(outlier.size = 0.1) +
     facet_grid(pz ~ lsd) +
@@ -78,6 +78,40 @@ for (index in seq_len(nrow(sepcordf))) {
          width = 6)
 }
 
+## MSE metric -----------------------------------------------------------------
+fadf %>%
+  select(contains("mse"), nsamp, pz, lsd, corval1, corval2) %>%
+  gather(contains("mse"), key = "method", value = "mse") %>%
+  mutate(method = str_replace(method, "mse_", "")) %>%
+  nest(-corval1, -corval2) ->
+  sepmsedf
+
+for (index in seq_len(nrow(sepcordf))) {
+  sepmsedf$data[[index]] %>%
+    mutate(pz = str_c("Proportion Zeros = ", pz),
+           lsd = str_c("Loadings SD = ", lsd),
+           nsamp = factor(nsamp),
+           method = factor(method, levels = c("ssvd", "pca", "flash", "ica", "peer"))) %>%
+    ggplot(aes(x = nsamp, y = mse, color = method)) +
+    geom_boxplot(outlier.size = 0.1) +
+    facet_grid(pz ~ lsd) +
+    theme_bw() +
+    theme(strip.background = element_rect(fill = "white")) +
+    xlab("Sample Size") +
+    ylab("Minimum MSE") +
+    scale_color_colorblind(name = "Method") ->
+    pl
+
+  ggsave(filename = str_c("./output/figures/fasim_plots/minmse_",
+                          sepcordf$corval1[index] * 10,
+                          "_",
+                          sepcordf$corval2[index] * 10,
+                          ".pdf"),
+         plot = pl,
+         family = "Times",
+         height = 6,
+         width = 6)
+}
 
 
 

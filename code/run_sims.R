@@ -55,10 +55,11 @@ one_sim_iter <- function(obj, bigmat) {
 
   ## Do the factor analyses after adding signal -------------------------------
   faafter <- list(
-    pca  = get_pca(mat = lmat2, k = nsv + 1),
-    ica  = get_ica(mat = lmat2, k = nsv + 1),
-    ssvd = get_ssvd(mat = lmat2, k = nsv + 1),
-    peer = get_peer(mat = lmat2, k = nsv + 1))
+    pca   = get_pca(mat = lmat2, k = nsv + 1),
+    ica   = get_ica(mat = lmat2, k = nsv + 1),
+    ssvd  = get_ssvd(mat = lmat2, k = nsv + 1),
+    peer  = get_peer(mat = lmat2, k = nsv + 1),
+    flash = get_flashr(mat = lmat2, k = nsv + 1))
 
   ## Max correlation metric ---------------------------------------------------
   cordiff <- sapply(faafter, FUN = function(obj) {
@@ -77,10 +78,17 @@ one_sim_iter <- function(obj, bigmat) {
     acos(crossprod(X3, X3hat))
   })
 
+  ## MSE between scaled added factor and scaled estimated factors -------------
+
+  msevec <- sapply(faafter, FUN = function(obj) {
+    min(colMeans((scale(obj$factors, center = FALSE) - scale(fl$factors, center = FALSE)[, 1]) ^ 2))
+  })
+
   ## Change names and combine for output --------------------------------------
-  names(cordiff) <- paste0("cordiff_", names(cordiff))
+  names(cordiff)  <- paste0("cordiff_", names(cordiff))
   names(anglevec) <- paste0("angle_", names(anglevec))
-  retvec <- c(cordiff, anglevec, nsv = nsv + 1, unlist(obj))
+  names(msevec)   <- paste0("mse_", names(msevec))
+  retvec <- c(cordiff, anglevec, msevec, nsv = nsv + 1, unlist(obj))
 
   return(retvec)
 }
@@ -95,7 +103,7 @@ bigmat    <- assay(musc)
 ## Set simulation parameters --------------------------------------------------
 ngene     <- 1000             ## Number of genes
 nsamp_vec <- c(6, 10, 20)     ## Number of samples
-cor_list  <- list(c(0, 0), c(0.5, 0), c(0.9, 0), c(0.5, 0.5)) ## Correlation between new factor and two old factors
+cor_list  <- list(c(0, 0), c(0.9, 0)) ## Target correlation between new factor and two old factors
 prop_zero <- c(0, 0.5, 0.9)   ## Proportion of loadings that are 0.
 load_sd   <- c(1, 2, 3)       ## Standard deviation of loadings.
 itermax   <- 200              ## Number of iterations per condition

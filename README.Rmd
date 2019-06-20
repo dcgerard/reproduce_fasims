@@ -30,6 +30,14 @@ If you find a bug, please create an
    the source package didn't work for me.
    
 2. Download and install powsimR: <https://github.com/bvieth/powsimR>.
+    
+    To download the version I used, try:
+    
+    ```{r, eval=FALSE}
+    devtools::install_github("bvieth/powsimR", 
+                             ref = "c70c819beeec35a21558cfb717fe91e7704be126")
+    ```
+    
 
 3. Install the appropriate R packages
     ```{r, eval = FALSE}
@@ -43,7 +51,8 @@ If you find a bug, please create an
                        "elasticnet",
                        "doSNOW", 
                        "ggthemes",
-                       "latex2exp"))
+                       "latex2exp",
+                       "devtools"))
     BiocManager::install(c("SummarizedExperiment", 
                            "pcaMethods", 
                            "sva",
@@ -51,8 +60,17 @@ If you find a bug, please create an
                            "DESeq2", 
                            "limma"))
     ```
+    
+4. Download and install flashr: <https://github.com/stephenslab/flashr>.
 
-4. Download data from the GTEx portal: <https://gtexportal.org/home/>. You'll
+    To download the version I used, try:
+    ```{r, eval=FALSE}
+    devtools::install_github("stephenslab/flashr", 
+                             ref = "276bca27a634d53697bae550c0566b3d1f12dbfc")
+    ```
+
+
+5. Download data from the GTEx portal: <https://gtexportal.org/home/>. You'll
    need to place the following files in the "data/gtex" folder:
    
     1. GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct
@@ -61,7 +79,7 @@ If you find a bug, please create an
     
     I cannot release these data, but it's free to sign up for access to GTEx.
 
-5. Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile
+6. Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile
    according to your local computing environment. For example, you would need
    to decrease `nc` if you have fewer than 12 CPU cores. You can check the 
    number of CPU cores you have by typing the following in R:
@@ -70,7 +88,7 @@ If you find a bug, please create an
     parallel::detectCores()
     ```
 
-6. Run `make`. To reproduce all of the results in the paper, 
+7. Run `make`. To reproduce all of the results in the paper, 
    just type in the terminal
    
     ```{bash, eval=FALSE}
@@ -110,7 +128,7 @@ If you find a bug, please create an
     make corest
     ```
     
-7. Get coffee. Though most of the results will be generated rather quickly, 
+8. Get coffee. Though most of the results will be generated rather quickly, 
    the `make FAsims` call will take a very long time (mostly because of PEER). 
    You should get some coffee! Here is a list of some of my favorite places:
 
@@ -152,7 +170,9 @@ package_vec <- c("seqgendiff",
                  "DESeq2", 
                  "limma",
                  "peer",
-                 "powsimR")
+                 "powsimR",
+                 "devtools",
+                 "flashr")
 lapply(package_vec, library, character.only = TRUE)
 ```
 

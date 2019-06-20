@@ -70,9 +70,48 @@ get_ssvd <- function(mat, k) {
 }
 
 get_spca <- function(mat, k, alpha) {
-  spout <- sparsepca::spca(X = t(mat), k = k, alpha = alpha)
+  spout <- sparsepca::spca(X = t(mat - rowMeans(mat)), k = k, alpha = alpha)
   retlist <- list(factors = spout$scores,
                   loadings = spout$loadings)
   return(alpha)
 }
+
+
+
+
+get_flashr <- function(mat, k) {
+  fdat <- flashr::flash_set_data(mat - rowMeans(mat))
+
+  fout <- flashr::flash(data     = fdat,
+                        Kmax     = k,
+                        var_type = "by_column",
+                        verbose  = FALSE,
+                        backfit  = TRUE)
+
+  fitted_val <- flashr:::flash_get_ldf(f = fout, drop_zero_factors = FALSE)
+
+  retlist <- list(factors = fitted_val$f,
+                  loadings = fitted_val$l)
+
+  return(retlist)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
