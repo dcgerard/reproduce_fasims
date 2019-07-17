@@ -130,8 +130,12 @@ $(fasimplots) : ./code/fasim_plots.R $(fasims_out)
 	mkdir -p ./output/figures/fasim_plots
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
+$(fasimplots_dir)/mpve_fasims.pdf : ./code/mpve_plots.R $(fasims_out)
+	mkdir -p ./output/figures/fasim_plots
+	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
+
 .PHONY : FAsims
-FAsims : $(fasimplots)
+FAsims : $(fasimplots) $(fasimplots_dir)/mpve_fasims.pdf
 
 
 # powsimR simulations ---------------------------------------------------
