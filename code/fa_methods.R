@@ -2,18 +2,6 @@
 ## factor analysis methods used, with standardized output.
 ######
 
-# library(pcaMethods)
-# library(fastICA)
-# library(elasticnet)
-# library(peer)
-# library(sparsepca)
-# library(SummarizedExperiment)
-# musc <- readRDS(file = "../output/tissue_data/muscle_skeletal.RDS")
-# which_bad <- rowMeans(assay(musc)) < 10
-# musc <- musc[!which_bad, ]
-# mat <- log2(assay(musc)[1:1000, 1:10] + 0.5)
-
-
 get_pca <- function(mat, k) {
   pcout <- pcaMethods::pca(object = t(mat), method = "svd", nPcs = k)
   retlist <- list(factors = pcaMethods::scores(pcout),
@@ -69,16 +57,6 @@ get_ssvd <- function(mat, k) {
   return(retlist)
 }
 
-get_spca <- function(mat, k, alpha) {
-  spout <- sparsepca::spca(X = t(mat - rowMeans(mat)), k = k, alpha = alpha)
-  retlist <- list(factors = spout$scores,
-                  loadings = spout$loadings)
-  return(alpha)
-}
-
-
-
-
 get_flashr <- function(mat, k) {
   fdat <- flashr::flash_set_data(mat - rowMeans(mat))
 
@@ -95,23 +73,3 @@ get_flashr <- function(mat, k) {
 
   return(retlist)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

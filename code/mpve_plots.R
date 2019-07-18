@@ -10,11 +10,7 @@ fadf %>%
   select(nsamp, ngene, pz, lsd, mpve) %>%
   filter(pz == 0) %>%
   mutate(nsamp = factor(nsamp),
-         lsd = as.character(lsd),
-         lsd = recode(lsd,
-                      "0.4" = "Loading SD = 0.4",
-                      "0.7" = "Loading SD = 0.7",
-                      "1"   = "Loading SD = 1")) %>%
+         lsd = paste0("Loadings SD = ", lsd)) %>%
   ggplot(aes(x = nsamp, y = mpve)) +
   facet_wrap(~lsd) +
   geom_boxplot(outlier.size = 0.5) +

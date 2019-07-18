@@ -109,11 +109,13 @@ all: NBplots FAsims powsimr corest diff_exp
 # Extract tissue data --------------------------------------------------
 $(tissue_dat) : ./code/format_gtex.R $(gtex_dat)
 	mkdir -p ./output/tissue_data
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 # Mixtures of binomial and negative binomial plot ----------------------
 ./output/figures/mix_dists.pdf : ./code/flexible_nb.R
 	mkdir -p ./output/figures
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 .PHONY : NBplots
@@ -122,16 +124,21 @@ NBplots : ./output/figures/mix_dists.pdf
 # FA Simulations -------------------------------------------------------
 
 # factor analysis simulations -------------------------------------------
-$(fasims_out) : ./code/run_sims.R $(tissue_dat)
+$(fasims_out) : ./code/run_sims.R ./code/fa_methods.R ./code/signal_funs.R $(tissue_dat)
 	mkdir -p ./output/fa_sims
+	mkdir -p ./output/rout
 	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
 
 $(fasimplots) : ./code/fasim_plots.R $(fasims_out)
+	mkdir -p ./output/figures
 	mkdir -p ./output/figures/fasim_plots
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 $(fasimplots_dir)/mpve_fasims.pdf : ./code/mpve_plots.R $(fasims_out)
+	mkdir -p ./output/figures
 	mkdir -p ./output/figures/fasim_plots
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 .PHONY : FAsims
@@ -141,10 +148,13 @@ FAsims : $(fasimplots) $(fasimplots_dir)/mpve_fasims.pdf
 # powsimR simulations ---------------------------------------------------
 ./output/compare_powsimR/powsim_params.RDS : ./code/get_powsimr_params.R $(tissue_dat)
 	mkdir -p ./output/compare_powsimR
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 $(feature_plots) : ./code/data_features.R ./output/compare_powsimR/powsim_params.RDS
+	mkdir -p ./output/figures
 	mkdir -p ./output/figures/powsimr_vs_seqgendiff
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 .Phony : powsimr
@@ -154,10 +164,12 @@ powsimr : $(feature_plots)
 # Correlation estimator simulations -------------------------------------
 ./output/est_cor/corsimout.RDS : ./code/est_cor.R
 	mkdir -p ./output/est_cor
+	mkdir -p ./output/rout
 	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
 
 ./output/figures/cor_est.pdf : ./code/corsim_plots.R ./output/est_cor/corsimout.RDS
 	mkdir -p ./output/figures
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 .Phony : corest
@@ -166,14 +178,18 @@ corest : ./output/figures/cor_est.pdf
 # Differential expression simulations ----------------------------------
 ./output/diff_exp_out/powsimr_sims.RDS : ./code/run_powsimr_sims.R ./output/compare_powsimR/powsim_params.RDS ./code/de_methods.R
 	mkdir -p ./output/diff_exp_out
+	mkdir -p ./output/rout
 	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
 
 ./output/diff_exp_out/seqgendiff_sims.RDS : ./code/run_seqgendiff_sims.R $(tissue_dat) ./code/de_methods.R
 	mkdir -p ./output/diff_exp_out
+	mkdir -p ./output/rout
 	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
 
 $(diff_exp_plots) : ./code/diff_exp_plots.R ./output/diff_exp_out/powsimr_sims.RDS ./output/diff_exp_out/seqgendiff_sims.RDS
+	mkdir -p ./output/figures
 	mkdir -p ./output/figures/diff_exp
+	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
 .Phony : diff_exp

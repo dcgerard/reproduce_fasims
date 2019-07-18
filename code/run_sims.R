@@ -47,7 +47,8 @@ one_sim_iter <- function(obj, bigmat) {
 
   ## Median proportion of variance explained ----------------------------------
   flprod <- tcrossprod(fl$loadings, fl$factors)
-  mpve <- median(apply(flprod, 1, stats::var) / apply(lmat, 1, stats::var))
+  pve_vec <- apply(flprod, 1, stats::var) / apply(lmat, 1, stats::var)
+  mpve <- median(pve_vec[abs(fl$loadings) > 10^-6])
 
   ## Add factors and loadings to mat ------------------------------------------
   thout <- seqgendiff::thin_diff(mat         = mat,
@@ -84,14 +85,28 @@ one_sim_iter <- function(obj, bigmat) {
 
   ## MSE between scaled added factor and scaled estimated factors -------------
   msevec <- sapply(faafter, FUN = function(obj) {
-    min(colMeans((scale(obj$factors, center = FALSE) - scale(thout$designmat, center = FALSE)[, 1]) ^ 2))
+    ## Deals with scale and sign invariance
+    min(c(colMeans((scale(obj$factors, center = FALSE) - scale(thout$designmat, center = FALSE)[, 1]) ^ 2),
+          colMeans((scale(-obj$factors, center = FALSE) - scale(thout$designmat, center = FALSE)[, 1]) ^ 2)))
+  })
+
+  loading_msevec <- sapply(faafter, FUN = function(obj) {
+    ## Deals with scale and sign invariance
+    min(c(colMeans((scale(obj$loadings, center = FALSE) - scale(thout$coefmat, center = FALSE)[, 1])^2),
+          colMeans((scale(-obj$loadings, center = FALSE) - scale(thout$coefmat, center = FALSE)[, 1])^2)))
   })
 
   ## Change names and combine for output --------------------------------------
-  names(cordiff)  <- paste0("cordiff_", names(cordiff))
-  names(anglevec) <- paste0("angle_", names(anglevec))
-  names(msevec)   <- paste0("mse_", names(msevec))
-  retvec <- c(cordiff, anglevec, msevec, nsv = nsv + 1, unlist(obj),
+  names(cordiff)        <- paste0("cordiff_", names(cordiff))
+  names(anglevec)       <- paste0("angle_", names(anglevec))
+  names(msevec)         <- paste0("mse_", names(msevec))
+  names(loading_msevec) <- paste0("loadmse_", names(loading_msevec))
+  retvec <- c(cordiff,
+              anglevec,
+              msevec,
+              loading_msevec,
+              nsv = nsv + 1,
+              unlist(obj),
               mpve = mpve)
 
   return(retvec)
@@ -106,11 +121,11 @@ bigmat    <- assay(musc)
 
 ## Set simulation parameters --------------------------------------------------
 ngene     <- 1000             ## Number of genes
-nsamp_vec <- c(6, 10, 20)     ## Number of samples
+nsamp_vec <- c(10, 20, 40)     ## Number of samples
 cor_list  <- list(c(0, 0), c(0.5, 0)) ## Target correlation between new factor and two old factors
-prop_zero <- c(0, 0.5, 0.9)   ## Proportion of loadings that are 0.
-load_sd   <- c(0.4, 0.7, 1)   ## Standard deviation of loadings.
-itermax   <- 200              ## Number of iterations per condition
+prop_zero <- c(0, 0.9)   ## Proportion of loadings that are 0.
+load_sd   <- c(0.4, 0.8)      ## Standard deviation of loadings.
+itermax   <- 100              ## Number of iterations per condition
 seedindex <- seq_len(itermax)
 
 pardf <- expand.grid(seed = seedindex,
