@@ -9,8 +9,8 @@ fadf <- read_csv("./output/fa_sims/fa_results.csv")
 
 ## Angle metric ---------------------------------------------------------------
 fadf %>%
-  select(contains("angle"), nsamp, pz, lsd, corval1, corval2) %>%
-  gather(contains("angle"), key = "method", value = "angle") %>%
+  select(starts_with("angle"), nsamp, pz, lsd, corval1, corval2) %>%
+  gather(starts_with("angle"), key = "method", value = "angle") %>%
   mutate(method = str_replace(method, "angle_", "")) %>%
   nest(-corval1, -corval2) ->
   sepangledf
@@ -45,8 +45,8 @@ for (index in seq_len(nrow(sepangledf))) {
 
 ## MSE metric -----------------------------------------------------------------
 fadf %>%
-  select(contains("mse"), nsamp, pz, lsd, corval1, corval2) %>%
-  gather(contains("mse"), key = "method", value = "mse") %>%
+  select(starts_with("mse"), nsamp, pz, lsd, corval1, corval2) %>%
+  gather(starts_with("mse"), key = "method", value = "mse") %>%
   mutate(method = str_replace(method, "mse_", "")) %>%
   nest(-corval1, -corval2) ->
   sepmsedf
@@ -81,8 +81,8 @@ for (index in seq_len(nrow(sepmsedf))) {
 
 ## Loadings MSE metric --------------------------------------------------------
 fadf %>%
-  select(contains("loadmse"), nsamp, pz, lsd, corval1, corval2) %>%
-  gather(contains("loadmse"), key = "method", value = "loadmse") %>%
+  select(starts_with("loadmse"), nsamp, pz, lsd, corval1, corval2) %>%
+  gather(starts_with("loadmse"), key = "method", value = "loadmse") %>%
   mutate(method = str_replace(method, "loadmse_", "")) %>%
   nest(-corval1, -corval2) ->
   seploadmsedf
