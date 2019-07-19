@@ -81,10 +81,10 @@ feature_plots = $(feature_dir)/count_dist.pdf \
 
 # Output of factor analysis simulation plots from ./code/fasim_plots.R
 fasimplots_dir = ./output/figures/fasim_plots
-fasimplots = $(fasimplots_dir)/angle_0_0.pdf \
+fasimplots = $(fasimplots_dir)/minloadmse_0_0.pdf \
+             $(fasimplots_dir)/minloadmse_5_0.pdf \
+             $(fasimplots_dir)/angle_0_0.pdf \
              $(fasimplots_dir)/angle_5_0.pdf \
-             $(fasimplots_dir)/cordiff_0_0.pdf \
-             $(fasimplots_dir)/cordiff_5_0.pdf \
              $(fasimplots_dir)/minmse_0_0.pdf \
              $(fasimplots_dir)/minmse_5_0.pdf
 

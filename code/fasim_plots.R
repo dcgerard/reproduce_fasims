@@ -7,41 +7,6 @@ library(latex2exp)
 library(ggthemes)
 fadf <- read_csv("./output/fa_sims/fa_results.csv")
 
-## Correlation difference metric ----------------------------------------------
-fadf %>%
-  select(contains("cordiff"), nsamp, pz, lsd, corval1, corval2) %>%
-  gather(contains("cordiff"), key = "method", value = "cordiff") %>%
-  mutate(method = str_replace(method, "cordiff_", "")) %>%
-  nest(-corval1, -corval2) ->
-  sepcordf
-
-for (index in seq_len(nrow(sepcordf))) {
-  sepcordf$data[[index]] %>%
-    mutate(pz = str_c("Proportion Zeros = ", pz),
-           lsd = str_c("Loadings SD = ", lsd),
-           nsamp = factor(nsamp),
-           method = factor(method, levels = c("ssvd", "pca", "flash", "ica", "peer"))) %>%
-    ggplot(aes(x = nsamp, y = cordiff, color = method)) +
-    geom_boxplot(outlier.size = 0.1) +
-    facet_grid(pz ~ lsd) +
-    theme_bw() +
-    theme(strip.background = element_rect(fill = "white")) +
-    xlab("Sample Size") +
-    ylab("Correlation Difference") +
-    scale_color_colorblind(name = "Method") ->
-    pl
-
-  ggsave(filename = str_c("./output/figures/fasim_plots/cordiff_",
-                          sepcordf$corval1[index] * 10,
-                          "_",
-                          sepcordf$corval2[index] * 10,
-                          ".pdf"),
-         plot = pl,
-         family = "Times",
-         height = 6,
-         width = 6)
-}
-
 ## Angle metric ---------------------------------------------------------------
 fadf %>%
   select(contains("angle"), nsamp, pz, lsd, corval1, corval2) %>%
@@ -50,7 +15,7 @@ fadf %>%
   nest(-corval1, -corval2) ->
   sepangledf
 
-for (index in seq_len(nrow(sepcordf))) {
+for (index in seq_len(nrow(sepangledf))) {
   sepangledf$data[[index]] %>%
     mutate(pz = str_c("Proportion Zeros = ", pz),
            lsd = str_c("Loadings SD = ", lsd),
@@ -68,9 +33,9 @@ for (index in seq_len(nrow(sepcordf))) {
     pl
 
   ggsave(filename = str_c("./output/figures/fasim_plots/angle_",
-                          sepcordf$corval1[index] * 10,
+                          sepangledf$corval1[index] * 10,
                           "_",
-                          sepcordf$corval2[index] * 10,
+                          sepangledf$corval2[index] * 10,
                           ".pdf"),
          plot = pl,
          family = "Times",
@@ -86,7 +51,7 @@ fadf %>%
   nest(-corval1, -corval2) ->
   sepmsedf
 
-for (index in seq_len(nrow(sepcordf))) {
+for (index in seq_len(nrow(sepmsedf))) {
   sepmsedf$data[[index]] %>%
     mutate(pz = str_c("Proportion Zeros = ", pz),
            lsd = str_c("Loadings SD = ", lsd),
@@ -103,9 +68,9 @@ for (index in seq_len(nrow(sepcordf))) {
     pl
 
   ggsave(filename = str_c("./output/figures/fasim_plots/minmse_",
-                          sepcordf$corval1[index] * 10,
+                          sepmsedf$corval1[index] * 10,
                           "_",
-                          sepcordf$corval2[index] * 10,
+                          sepmsedf$corval2[index] * 10,
                           ".pdf"),
          plot = pl,
          family = "Times",
@@ -114,7 +79,37 @@ for (index in seq_len(nrow(sepcordf))) {
 }
 
 
+## Loadings MSE metric --------------------------------------------------------
+fadf %>%
+  select(contains("loadmse"), nsamp, pz, lsd, corval1, corval2) %>%
+  gather(contains("loadmse"), key = "method", value = "loadmse") %>%
+  mutate(method = str_replace(method, "loadmse_", "")) %>%
+  nest(-corval1, -corval2) ->
+  seploadmsedf
 
+for (index in seq_len(nrow(seploadmsedf))) {
+  seploadmsedf$data[[index]] %>%
+    mutate(pz = str_c("Proportion Zeros = ", pz),
+           lsd = str_c("Loadings SD = ", lsd),
+           nsamp = factor(nsamp),
+           method = factor(method, levels = c("ssvd", "pca", "flash", "ica", "peer"))) %>%
+    ggplot(aes(x = nsamp, y = loadmse, color = method)) +
+    geom_boxplot(outlier.size = 0.1) +
+    facet_grid(pz ~ lsd) +
+    theme_bw() +
+    theme(strip.background = element_rect(fill = "white")) +
+    xlab("Sample Size") +
+    ylab("Minimum MSE of Loadings") +
+    scale_color_colorblind(name = "Method") ->
+    pl
 
-
-
+  ggsave(filename = str_c("./output/figures/fasim_plots/minloadmse_",
+                          seploadmsedf$corval1[index] * 10,
+                          "_",
+                          seploadmsedf$corval2[index] * 10,
+                          ".pdf"),
+         plot = pl,
+         family = "Times",
+         height = 6,
+         width = 6)
+}
