@@ -104,7 +104,17 @@ gtex_dat = $(gtex_dir)/GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct 
            $(gtex_dir)/GTEx_v7_Annotations_SubjectPhenotypesDS.txt \
            $(gtex_dir)/GTEx_v7_Annotations_SampleAttributesDS.txt
 
-all: NBplots FAsims powsimr corest diff_exp
+# The raw PBMC data ----------------------------------------------------
+pbmc_dat = ./data/pbmc/barcodes.tsv \
+           ./data/pbmc/genes.tsv \
+           ./data/pbmc/matrix.mtx
+
+# single cell plots ----------------------------------------------------
+sc_plots = ./output/figures/sc_plots/sc_angle.pdf \
+           ./output/figures/sc_plots/sc_mse.pdf \
+           ./output/figures/sc_plots/sc_loadmse.pdf
+
+all: NBplots FAsims powsimr corest diff_exp sc_fa
 
 # Extract tissue data --------------------------------------------------
 $(tissue_dat) : ./code/format_gtex.R $(gtex_dat)
@@ -186,14 +196,56 @@ corest : ./output/figures/cor_est.pdf
 	mkdir -p ./output/rout
 	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
 
+./output/diff_exp_out/simseq_sims.RDS : ./code/run_simseq_sims.R $(tissue_dat) ./code/de_methods.R
+	mkdir -p ./output/diff_exp_out
+	mkdir -p ./output/rout
+	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
+
+./output/simseq_vs_seqgendiff/ash_ests.csv : ./code/prop_nonnull.R ./output/tissue_data/muscle_skeletal.RDS
+	mkdir -p ./output/simseq_vs_seqgendiff
+	mkdir -p ./output/rout
+	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
+
+./output/diff_exp_out/seqgendiff_small_mpve_sims.RDS : ./code/run_seqgendiff_small_mpve_sims.R $(tissue_dat) ./code/de_methods.R ./output/simseq_vs_seqgendiff/ash_ests.csv
+	mkdir -p ./output/diff_exp_out
+	mkdir -p ./output/rout
+	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
+
 $(diff_exp_plots) : ./code/diff_exp_plots.R ./output/diff_exp_out/powsimr_sims.RDS ./output/diff_exp_out/seqgendiff_sims.RDS
 	mkdir -p ./output/figures
 	mkdir -p ./output/figures/diff_exp
 	mkdir -p ./output/rout
 	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
 
-.Phony : diff_exp
-diff_exp : $(diff_exp_plots)
+./output/figures/simseq_plots/simseq_gtex.pdf ./output/figures/simseq_plots/simseq_time.pdf: ./code/plot_simseq_seqgendiff_gtex.R ./output/diff_exp_out/seqgendiff_small_mpve_sims.RDS ./output/diff_exp_out/simseq_sims.RDS
+	mkdir -p ./output/diff_exp_out
+	mkdir -p ./output/rout
+	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
 
+.Phony : diff_exp
+diff_exp : $(diff_exp_plots) ./output/figures/simseq_plots/simseq_gtex.pdf ./output/figures/simseq_plots/simseq_time.pdf
+
+# Single cell factor analysis simulations ---------------------------------------
+
+./output/sc/pbmc_cleaned.RDS : ./code/extract_pbmc.R $(pbmc_dat)
+	mkdir -p ./output/sc
+	mkdir -p ./output/rout
+	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
+
+./output/sc/sc_fa_sims.csv : ./code/run_sims_sc.R ./output/sc/pbmc_cleaned.RDS ./code/fa_methods.R ./code/signal_funs.R
+	mkdir -p ./output/sc
+	mkdir -p ./output/rout
+	$(rexec) '--args nc=$(nc)' $< output/rout/$(basename $(notdir $<)).Rout
+
+$(sc_plots) : ./code/sc_plots.R ./output/sc/sc_fa_sims.csv
+	mkdir -p ./output/figures
+	mkdir -p ./output/figures/sc_plots
+	mkdir -p ./output/rout
+	$(rexec) $< output/rout/$(basename $(notdir $<)).Rout
+
+.Phony : sc_fa
+sc_fa : $(sc_plots)
+
+# remove tissue data to start over ---------------------------------------------
 clean:
 	rm -f $(tissue_dat)

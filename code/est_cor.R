@@ -22,7 +22,7 @@ if (length(args) == 0) {
 
 ## Set up simulation settings ------------------------------------------------
 itermax <- 100
-nvec <- c(6, 10, 20)
+nvec <- c(6, 10, 20, 500)
 cor_list <- list(c(0, 0), c(0.5, 0), c(0.9, 0), c(0.5, 0.5))
 pardf <- expand.grid(seed = seq_len(itermax),
                      nsamp = nvec,

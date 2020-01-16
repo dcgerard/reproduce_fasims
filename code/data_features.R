@@ -187,7 +187,7 @@ lout_ps <- limma::lmFit(vout_ps)
 eout_ps <- limma::eBayes(lout_ps)
 
 qplot(beta_ps, eout_ps$coefficients[, 2]) +
-  geom_abline(color = 2, lty = 2, lwd = 1) +
+  geom_abline(color = "red", lty = "dashed", lwd = 1) +
   xlab(TeX("$b_1$")) +
   ylab(TeX("$\\hat{b}_1$")) +
   theme_bw() ->
@@ -200,7 +200,7 @@ ggsave(file = "./output/figures/powsimr_vs_seqgendiff/powsimR_truevsfits.pdf",
        width = 6)
 
 qplot(beta_sgd, eout_sgd$coefficients[, 2]) +
-  geom_abline(color = 2, lty = 2, lwd = 1) +
+  geom_abline(color = "red", lty = "dashed", lwd = 1) +
   xlab(TeX("$b_1$")) +
   ylab(TeX("$\\hat{b}_1$")) +
   theme_bw() ->

@@ -43,9 +43,10 @@ stopifnot(foreach::getDoParWorkers() > 1)
 retmat <- foreach (iterindex = seq_len(itermax),
          .combine = rbind) %dopar% {
 
+           set.seed(iterindex)
            ## Simulate data ---------------------------------------------------
-           which_gene <- sort(sample(seq_len(nrow(musc)), ngene))
-           which_samp <- sort(sample(seq_len(ncol(musc)), nsamp))
+           which_gene <- sort(sample(seq_len(BiocGenerics::nrow(musc)), ngene))
+           which_samp <- sort(sample(seq_len(BiocGenerics::ncol(musc)), nsamp))
            submusc   <- fullcounts[which_gene, which_samp]
            thout <- seqgendiff::thin_2group(mat = submusc,
                                             prop_null = prop_null,
@@ -72,7 +73,11 @@ retmat <- foreach (iterindex = seq_len(itermax),
            })
 
            fprvec <- sapply(fitlist, FUN = function(obj) {
-             mean(which_null[obj$discovery], na.rm = TRUE)
+             if (any(obj$discovery, na.rm = TRUE)) {
+               mean(which_null[obj$discovery], na.rm = TRUE)
+             } else {
+               0
+             }
            })
            names(fprvec) <- paste0("fpr_", names(fprvec))
 

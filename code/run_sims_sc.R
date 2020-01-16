@@ -34,6 +34,14 @@ one_sim_iter <- function(obj, bigmat) {
   which_gene <- sample(seq_len(nrow(bigmat)), size = obj$ngene)
   which_samp <- sample(seq_len(ncol(bigmat)), size = obj$nsamp)
   mat <- bigmat[which_gene, which_samp]
+  
+  ## make sure mat has counts -------------------------------------------------
+  mat <- mat[rowSums(mat) > 0, ]
+  mat <- mat[, colSums(mat) > 0]
+  
+  obj$nsamp <- ncol(mat)
+  obj$ngene <- nrow(mat)
+  
   lmat <- log2(mat + 0.5)
 
   ## Estimate number of factors -----------------------------------------------
@@ -107,23 +115,21 @@ one_sim_iter <- function(obj, bigmat) {
               loading_msevec,
               nsv = nsv + 1,
               unlist(obj),
-              mpve = mpve)
+              mpve = mpve,
+              ngene = nrow(mat),
+              nsamp = ncol(mat))
 
   return(retvec)
 }
 
 ## Read in data and filter out low-expressed genes ----------------------------
-suppressPackageStartupMessages(library(SummarizedExperiment))
-musc      <- readRDS("./output/tissue_data/muscle_skeletal.RDS")
-which_bad <- rowMeans(assay(musc)) < 10
-musc      <- musc[!which_bad, ]
-bigmat    <- assay(musc)
+bigmat <- readRDS("./output/sc/pbmc_cleaned.RDS")
 
 ## Set simulation parameters --------------------------------------------------
 ngene     <- 1000             ## Number of genes
-nsamp_vec <- c(10, 20, 40)     ## Number of samples
+nsamp_vec <- 500              ## Number of samples
 cor_list  <- list(c(0, 0), c(0.5, 0)) ## Target correlation between new factor and two old factors
-prop_zero <- c(0, 0.9)   ## Proportion of loadings that are 0.
+prop_zero <- c(0, 0.9)        ## Proportion of loadings that are 0.
 load_sd   <- c(0.4, 0.8)      ## Standard deviation of loadings.
 itermax   <- 100              ## Number of iterations per condition
 seedindex <- seq_len(itermax)
@@ -151,18 +157,5 @@ stopCluster(cl)
 
 ## Save output ----------------------------------------------------------------
 write.csv(x = simout,
-          file = "./output/fa_sims/fa_results.csv",
+          file = "./output/sc/sc_fa_sims.csv",
           row.names = FALSE)
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -13,6 +13,12 @@ get_ica <- function(mat, k) {
   trash <- capture.output({
     icout <- fastICA::fastICA(X = t(mat), n.comp = k, method = "C", row.norm = TRUE)
   })
+  if (any(is.na(icout$S)) | any(is.na(icout$A)) | any(is.nan(icout$S)) | any(is.nan(icout$A))) {
+    ## sometimes the C method does not work.
+    trash <- capture.output({
+      icout <- fastICA::fastICA(X = t(mat), n.comp = k, method = "R", row.norm = TRUE)
+    })
+  }
   retlist <- list(factors = icout$S,
                   loadings = t(icout$A))
   return(retlist)

@@ -29,6 +29,37 @@ If you find a bug, please create an
    to build the R package from the cloned repository, as installing it from
    the source package didn't work for me.
    
+   When I installed it (in Ubuntu), I had to use an older version of g++ 
+   (see <https://stackoverflow.com/questions/1616983/building-r-packages-using-alternate-gcc>).
+   The steps I used were
+   
+    a. Install g++-5
+    
+        ```{bash, eval = FALSE}
+        sudo apt-get install g++-5
+        ```
+      
+    b. Create a Makevars file
+    
+        ```{bash, eval = FALSE}
+        touch ~/.R/Makevars
+        ```
+      
+    c. Edit the Makevars file to set the default g++ version to use
+
+        ```
+        CXX=g++-5
+        ```
+      
+    d. Install peer from the cloned repo using their instructions.
+    
+    e. Delete the Makevars file so that future packages won't use the older
+       version of g++.
+       
+        ```{bash, eval = FALSE}
+        rm ~/.R/Makevars
+        ```
+   
 2. Download and install powsimR: <https://github.com/bvieth/powsimR>.
     
     To download the version I used, try:
@@ -38,7 +69,14 @@ If you find a bug, please create an
                              ref = "c70c819beeec35a21558cfb717fe91e7704be126")
     ```
     
-
+    I had to install a few packages using apt in my Ubuntu system before
+    all of the dependencies would install:
+    
+    ```{bash, eval = FALSE}
+    sudo apt-get install libcairo2-dev
+    sudo apt-get install libgsl-dev
+    ```
+    
 3. Install the appropriate R packages
     ```{r, eval = FALSE}
     install.packages(c("seqgendiff",
@@ -52,34 +90,48 @@ If you find a bug, please create an
                        "doSNOW", 
                        "ggthemes",
                        "latex2exp",
-                       "devtools"))
+                       "devtools",
+                       "SimSeq"))
     BiocManager::install(c("SummarizedExperiment", 
                            "pcaMethods", 
                            "sva",
                            "edgeR",
                            "DESeq2", 
-                           "limma"))
+                           "limma",
+                           "Seurat"))
     ```
     
 4. Download and install flashr: <https://github.com/stephenslab/flashr>.
 
     To download the version I used, try:
     ```{r, eval=FALSE}
+    devtools::install_github("stephenslab/ebnm")
     devtools::install_github("stephenslab/flashr", 
                              ref = "276bca27a634d53697bae550c0566b3d1f12dbfc")
     ```
 
-
-5. Download data from the GTEx portal: <https://gtexportal.org/home/>. You'll
+5. Download data from the GTEx portal [@gtex2017genetic]: <https://gtexportal.org/home/>. You'll
    need to place the following files in the "data/gtex" folder:
    
     1. GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct
-    3. GTEx_v7_Annotations_SubjectPhenotypesDS.txt
-    5. GTEx_v7_Annotations_SampleAttributesDS.txt
+    2. GTEx_v7_Annotations_SubjectPhenotypesDS.txt
+    3. GTEx_v7_Annotations_SampleAttributesDS.txt
     
     I cannot release these data, but it's free to sign up for access to GTEx.
+    
+6. Download the 10x Genomics PBMC dataset [@zheng2017massively].
 
-6. Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile
+    We used the same dataset as from Seurat tutorial (<https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html>). The data can be directly downloaded from here:
+    
+    <https://s3-us-west-2.amazonaws.com/10x.files/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz>
+    
+    After unzipping, you should then place the following files in the "data/pbmc" folder:
+    
+    1. barcodes.tsv
+    2. genes.tsv
+    3. matrix.mtx
+
+7. Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile
    according to your local computing environment. For example, you would need
    to decrease `nc` if you have fewer than 12 CPU cores. You can check the 
    number of CPU cores you have by typing the following in R:
@@ -88,7 +140,7 @@ If you find a bug, please create an
     parallel::detectCores()
     ```
 
-7. Run `make`. To reproduce all of the results in the paper, 
+8. Run `make`. To reproduce all of the results in the paper, 
    just type in the terminal
    
     ```{bash, eval=FALSE}
@@ -128,14 +180,21 @@ If you find a bug, please create an
     make corest
     ```
     
-8. Get coffee. Though most of the results will be generated rather quickly, 
+    To just reproduce the simulations using the PBMC data, run in the
+    terminal
+    
+    ```{bash, eval = FALSE}
+    make sc_fa
+    ```
+    
+9. Get coffee. Though most of the results will be generated rather quickly, 
    the `make FAsims` call will take a very long time (mostly because of PEER). 
    You should get some coffee! Here is a list of some of my favorite places:
 
     - Washington, DC
         - [Colony Club](https://www.yelp.com/biz/colony-club-washington)
         - [Grace Street Coffee](https://www.yelp.com/biz/grace-street-coffee-georgetown)
-        - [Shop Made in DC](https://www.yelp.com/biz/shop-made-in-dc-washington)
+        - [Maketto](https://www.yelp.com/biz/maketto-washington-2)
     - Chicago
         - [Sawada Coffee](https://www.yelp.com/biz/sawada-coffee-chicago)
         - [Plein Air Cafe](https://www.yelp.com/biz/plein-air-cafe-and-eatery-chicago-2)
@@ -172,7 +231,9 @@ package_vec <- c("seqgendiff",
                  "peer",
                  "powsimR",
                  "devtools",
-                 "flashr")
+                 "flashr", 
+                 "SimSeq",
+                 "Seurat")
 lapply(package_vec, library, character.only = TRUE)
 ```
 
