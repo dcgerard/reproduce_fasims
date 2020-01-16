@@ -15,39 +15,33 @@ Instructions
 
 1.  Download and Install PEER: <https://github.com/PMBio/peer/wiki>. I had to build the R package from the cloned repository, as installing it from the source package didn't work for me.
 
-When I installed it (in Ubuntu), I had to use an older version of g++ (see <https://stackoverflow.com/questions/1616983/building-r-packages-using-alternate-gcc>). The steps I used were
+    When I installed it (in Ubuntu), I had to use an older version of g++ (see <https://stackoverflow.com/questions/1616983/building-r-packages-using-alternate-gcc>). The steps I used were
 
-    a. Install g++-5
+    1.  Install g++-5
 
-        
-        ```bash
+        ``` bash
         sudo apt-get install g++-5
         ```
-      
-    b. Create a Makevars file
 
-        
-        ```bash
+    2.  Create a Makevars file
+
+        ``` bash
         touch ~/.R/Makevars
         ```
-      
-    c. Edit the Makevars file to set the default g++ version to use
 
-        ```
-        CXX=g++-5
-        ```
-      
-    d. Install peer from the cloned repo using their instructions.
+    3.  Edit the Makevars file to set the default g++ version to use
 
-    e. Delete the Makevars file so that future packages won't use the older
-       version of g++.
-       
-        
-        ```bash
+            CXX=g++-5
+
+    4.  Install peer from the cloned repo using their instructions.
+
+    5.  Delete the Makevars file so that future packages won't use the older version of g++.
+
+        ``` bash
         rm ~/.R/Makevars
         ```
 
-1.  Download and install powsimR: <https://github.com/bvieth/powsimR>.
+2.  Download and install powsimR: <https://github.com/bvieth/powsimR>.
 
     To download the version I used, try:
 
@@ -63,7 +57,7 @@ When I installed it (in Ubuntu), I had to use an older version of g++ (see <http
     sudo apt-get install libgsl-dev
     ```
 
-2.  Install the appropriate R packages
+3.  Install the appropriate R packages
 
     ``` r
     install.packages(c("seqgendiff",
@@ -88,7 +82,7 @@ When I installed it (in Ubuntu), I had to use an older version of g++ (see <http
                            "Seurat"))
     ```
 
-3.  Download and install flashr: <https://github.com/stephenslab/flashr>.
+4.  Download and install flashr: <https://github.com/stephenslab/flashr>.
 
     To download the version I used, try:
 
@@ -98,7 +92,7 @@ When I installed it (in Ubuntu), I had to use an older version of g++ (see <http
                              ref = "276bca27a634d53697bae550c0566b3d1f12dbfc")
     ```
 
-4.  Download data from the GTEx portal (“GTEx Consortium” 2017): <https://gtexportal.org/home/>. You'll need to place the following files in the "data/gtex" folder:
+5.  Download data from the GTEx portal (“GTEx Consortium” 2017): <https://gtexportal.org/home/>. You'll need to place the following files in the "data/gtex" folder:
 
     1.  GTEx\_Analysis\_2016-01-15\_v7\_RNASeQCv1.1.8\_gene\_reads.gct
     2.  GTEx\_v7\_Annotations\_SubjectPhenotypesDS.txt
@@ -106,7 +100,7 @@ When I installed it (in Ubuntu), I had to use an older version of g++ (see <http
 
     I cannot release these data, but it's free to sign up for access to GTEx.
 
-5.  Download the 10x Genomics PBMC dataset (Zheng et al. 2017).
+6.  Download the 10x Genomics PBMC dataset (Zheng et al. 2017).
 
     We used the same dataset as from Seurat tutorial (<https://satijalab.org/seurat/v3.1/pbmc3k_tutorial.html>). The data can be directly downloaded from here:
 
@@ -118,13 +112,13 @@ When I installed it (in Ubuntu), I had to use an older version of g++ (see <http
     2.  genes.tsv
     3.  matrix.mtx
 
-6.  Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile according to your local computing environment. For example, you would need to decrease `nc` if you have fewer than 12 CPU cores. You can check the number of CPU cores you have by typing the following in R:
+7.  Adjust the Makefile. Change the `nc` and `rexec` variables in the Makefile according to your local computing environment. For example, you would need to decrease `nc` if you have fewer than 12 CPU cores. You can check the number of CPU cores you have by typing the following in R:
 
     ``` r
     parallel::detectCores()
     ```
 
-7.  Run `make`. To reproduce all of the results in the paper, just type in the terminal
+8.  Run `make`. To reproduce all of the results in the paper, just type in the terminal
 
     ``` bash
     make
@@ -166,7 +160,7 @@ When I installed it (in Ubuntu), I had to use an older version of g++ (see <http
     make sc_fa
     ```
 
-8.  Get coffee. Though most of the results will be generated rather quickly, the `make FAsims` call will take a very long time (mostly because of PEER). You should get some coffee! Here is a list of some of my favorite places:
+9.  Get coffee. Though most of the results will be generated rather quickly, the `make FAsims` call will take a very long time (mostly because of PEER). You should get some coffee! Here is a list of some of my favorite places:
 
     -   Washington, DC
         -   [Colony Club](https://www.yelp.com/biz/colony-club-washington)

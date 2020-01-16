@@ -29,9 +29,9 @@ If you find a bug, please create an
    to build the R package from the cloned repository, as installing it from
    the source package didn't work for me.
    
-   When I installed it (in Ubuntu), I had to use an older version of g++ 
-   (see <https://stackoverflow.com/questions/1616983/building-r-packages-using-alternate-gcc>).
-   The steps I used were
+    When I installed it (in Ubuntu), I had to use an older version of g++ 
+    (see <https://stackoverflow.com/questions/1616983/building-r-packages-using-alternate-gcc>).
+    The steps I used were
    
     a. Install g++-5
     
@@ -46,7 +46,7 @@ If you find a bug, please create an
         ```
       
     c. Edit the Makevars file to set the default g++ version to use
-
+    
         ```
         CXX=g++-5
         ```
